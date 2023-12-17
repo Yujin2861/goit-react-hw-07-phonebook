@@ -1,9 +1,11 @@
 import styles from './ContactForm.module.css';
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addContactThunk } from 'reduxx/operations/contactsThunk';
+import { selectContacts } from 'reduxx/selectors/selectors';
 
 export const ContactForm = () => {
+  const contacts = useSelector(selectContacts)
   const dispatch = useDispatch();
 
   const handleSubmit = e => {
@@ -13,6 +15,14 @@ export const ContactForm = () => {
       name: e.target.elements.name.value,
       number: e.target.elements.number.value,
     };
+
+    const normalizedName = e.target.elements.name.value.toLowerCase();
+
+    if (contacts.find(contact => contact.name.toLowerCase() === normalizedName)) {
+      alert(`${newObj.name} is already in contacts.`);
+      return;
+    }
+
     dispatch(addContactThunk(newObj));
 
     e.target.reset();
